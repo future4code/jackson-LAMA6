@@ -1,9 +1,8 @@
 import { BaseDatabase } from "./BaseDatabase";
 import { User } from "../model/User";
+import Migrations from "./Migrations";
 
 export class UserDatabase extends BaseDatabase {
-  private static TABLE_NAME = "";
-
   public async createUser(
     id: string,
     email: string,
@@ -20,7 +19,7 @@ export class UserDatabase extends BaseDatabase {
           password,
           role
         })
-        .into(UserDatabase.TABLE_NAME);
+        .into(Migrations.getTableUsers());
     } catch (error) {
       throw new Error(error.sqlMessage || error.message);
     }
@@ -29,7 +28,7 @@ export class UserDatabase extends BaseDatabase {
   public async getUserByEmail(email: string): Promise<User> {
     const result = await this.getConnection()
       .select("*")
-      .from(UserDatabase.TABLE_NAME)
+      .from(Migrations.getTableUsers())
       .where({ email });
 
     return User.toUserModel(result[0]);

@@ -15,7 +15,7 @@ class Migrations extends BaseDatabase {
         id VARCHAR(255) PRIMARY KEY,
         name VARCHAR(255) UNIQUE NOT NULL,
         music_genre VARCHAR(255) NOT NULL,
-        responsible VARCHAR(255) UNIQUE NOT NULL 
+        responsible VARCHAR(255) UNIQUE NOT NULL
       )`);
 
       await this.getConnection().raw(`CREATE TABLE ${Migrations.tableShows} (
@@ -27,11 +27,13 @@ class Migrations extends BaseDatabase {
         FOREIGN KEY(band_id) REFERENCES ${Migrations.tableBands}(id)
       )`);
 
-      await this.getConnection().raw(`CREATE TABLE ${Migrations.tableUsers} (
+      await this.getConnection().raw(`
+        CREATE TABLE ${Migrations.tableUsers} (
         id VARCHAR(255) PRIMARY KEY,
-        name VARCHAR(255) UNIQUE NOT NULL,
-        music_genre VARCHAR(255) NOT NULL,
-        responsible VARCHAR(255) UNIQUE NOT NULL 
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL UNIQUE,
+        password VARCHAR(255) NOT NULL,
+        role VARCHAR(255) NOT NULL DEFAULT "NORMAL"
       )`);
     } catch (error) {
       console.log(error);
@@ -39,5 +41,7 @@ class Migrations extends BaseDatabase {
   };
 }
 
-const setup = new Migrations();
-setup.createTables();
+export default new Migrations();
+
+// const setup = new Migrations();
+// setup.createTables();

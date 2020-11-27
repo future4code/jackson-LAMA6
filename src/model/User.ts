@@ -7,11 +7,13 @@ export class User {
     private role: UserRole
   ) {}
 
+
   public getId = (): string => this.id;
   public getName = (): string => this.name;
   public getEmail = (): string => this.email;
   public getPassword = (): string => this.password;
   public getRole = (): UserRole => this.role;
+
 
   static stringToUserRole(input: string): UserRole {
     switch (input) {
@@ -35,14 +37,14 @@ export class User {
   }
 }
 
-export interface UserInputDTO {
+export interface UserInput {
   email: string;
   password: string;
   name: string;
   role: string;
 }
 
-export interface LoginInputDTO {
+export interface LoginInput {
   email: string;
   password: string;
 }

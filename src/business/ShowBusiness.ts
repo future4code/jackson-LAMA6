@@ -66,8 +66,18 @@ export class ShowBusiness {
     }
   }
 
-  public async getByDay(day: string) {
+  public async getByDay(day: string): Promise<any> {
     try {
+      if (!day) {
+        throw new Error("Invalid day");
+      }
+      const showSchedule = await this.showDataBase.getShowByDay(
+        Show.stringToWeekDay(day)
+      );
+
+      console.log({ showSchedule });
+
+      return showSchedule;
     } catch (error) {
       throw new ParameterError(error.message, error.code);
     }

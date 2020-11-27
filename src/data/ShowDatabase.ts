@@ -1,6 +1,6 @@
 import { BaseDatabase } from "./BaseDatabase";
 import Migrations from "./Migrations";
-import { Show } from "../model/Show";
+import { Show, WeekDay } from "../model/Show";
 
 export class ShowDatabase extends BaseDatabase {
   public async createShow(show: Show): Promise<void> {
@@ -28,6 +28,18 @@ export class ShowDatabase extends BaseDatabase {
       const show = await this.getConnection().raw(
         `SELECT * FROM ${Migrations.getTableShows()} WHERE week_day = "${weekDay}" AND start_time BETWEEN ${startTime} AND ${endTime}`
       );
+      return show[0];
+    } catch (error) {
+      throw new Error(error.sqlMessage || error.message);
+    }
+  }
+
+  public async getShowByDay(day: WeekDay): Promise<any> {
+    try {
+      const show = await this.getConnection().raw(
+        `SELECT * FROM ${Migrations.getTableShows()} WHERE week_day = "${day}" ORDER BY start_time`
+      );
+
       return show[0];
     } catch (error) {
       throw new Error(error.sqlMessage || error.message);

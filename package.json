@@ -4,7 +4,7 @@
   "description": "Template para o projeto LAMA",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "dev": "ts-node-dev ./src/index.ts",
     "start": "tsc && node --inspect ./build/src/index.js",
     "migrations": "ts-node-dev ./src/data/Migrations.ts"
@@ -13,7 +13,7 @@
     "api",
     "labook"
   ],
-  "author": "João Alves",
+  "author": "Claudia e Lucas",
   "license": "ISC",
   "dependencies": {
     "@types/bcryptjs": "^2.4.2",

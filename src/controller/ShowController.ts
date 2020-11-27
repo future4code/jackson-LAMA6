@@ -1,12 +1,13 @@
 import { Request, Response } from "express";
 import { ShowInput } from "../model/Show";
-import ShowBusiness from "../business/ShowBusiness";
+import showBusiness, { ShowBusiness } from "../business/ShowBusiness";
+import { validation } from "../utils/validation";
 
 export class ShowController {
-  async createShow(req: Request, res: Response) {
-    try {
-      const token: string = req.headers.authorization as string;
+  constructor(private showBusiness: ShowBusiness) {}
 
+  public createShow = async (req: Request, res: Response): Promise<void> => {
+    try {
       const input: ShowInput = {
         bandId: req.body.bandId,
         weekDay: req.body.weekDay,
@@ -14,12 +15,16 @@ export class ShowController {
         endTime: req.body.endTime
       };
 
-      await ShowBusiness.createShow(input, token);
+      const token: string = req.headers.authorization as string;
+
+      await this.showBusiness.createShow(input, token, validation);
+
       res.status(200).send({ message: "Show created" });
     } catch (error) {
-      res.status(400).send({ error: error.message });
+      const { statusCode, message } = error;
+      res.status(statusCode || 400).send({ message });
     }
-  }
+  };
 }
 
-export default new ShowController();
+export default new ShowController(showBusiness);

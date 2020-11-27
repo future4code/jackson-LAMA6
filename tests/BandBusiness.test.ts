@@ -9,19 +9,43 @@ export const validatorMockTrue = jest.fn((input: any): any =>{
     return true
 })
 
+export const dataTokenRoleNormalMock = jest.fn((token: any): any =>{
+    return {
+        id:"id",
+        role: "NORMAL"
+    }
+})
+
+export const dataTokenRoleAdminMock = jest.fn((token: any): any =>{
+    return {
+        id:"id",
+        role: "ADMIN"
+    }
+})
+
+export const dataTokenRoleNonMock = jest.fn((token: any): any =>{
+    return {
+        id:"id",
+        role: "TEST"
+    }
+})
 
 describe("Register band", () =>{
-    const authenticator = { getData: jest.fn() } as any
+    const roleAdmin = { getData: dataTokenRoleAdminMock } as any
+    const roleNormal = { getData: dataTokenRoleNormalMock } as any
+    const nonRole = { getData: dataTokenRoleNonMock } as any
     const idGenerator = { generate: jest.fn() } as any
     const bandDataBase = { registerBand: jest.fn() } as any
 
-    const bandBusiness: BandBusiness = new BandBusiness(
-        authenticator,
-        idGenerator,
-        bandDataBase
-    )
 
     test("Error when 'name' is empty", async () =>{
+
+        const bandBusiness: BandBusiness = new BandBusiness(
+            roleAdmin,
+            idGenerator,
+            bandDataBase
+        )
+
         const input: InputBand = {
             name: "",
             genre: "Rock",
@@ -41,6 +65,12 @@ describe("Register band", () =>{
     })
 
     test("Error when 'genre' is empty", async () =>{
+        const bandBusiness: BandBusiness = new BandBusiness(
+            roleAdmin,
+            idGenerator,
+            bandDataBase
+        )
+
         const input: InputBand = {
             name: "Beatles",
             genre: "",
@@ -60,6 +90,12 @@ describe("Register band", () =>{
     })
 
     test("Error when 'responsible' is empty", async () =>{
+        const bandBusiness: BandBusiness = new BandBusiness(
+            roleAdmin,
+            idGenerator,
+            bandDataBase
+        )
+
         const input: InputBand = {
             name: "Beatles",
             genre: "Rock",
@@ -79,6 +115,12 @@ describe("Register band", () =>{
     })
 
     test("Success case", async () =>{
+        const bandBusiness: BandBusiness = new BandBusiness(
+            roleAdmin,
+            idGenerator,
+            bandDataBase
+        )
+
         const input: InputBand = {
             name: "Beatles",
             genre: "Rock",
@@ -86,7 +128,7 @@ describe("Register band", () =>{
         }
     
         const mockValidator = validatorMockTrue
-        expect.assertions(0)
+        expect.assertions(1)
 
         try {
             await bandBusiness.registerBand(input, "tokenTest", mockValidator as any)

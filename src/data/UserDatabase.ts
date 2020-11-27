@@ -3,21 +3,17 @@ import { User } from "../model/User";
 import Migrations from "./Migrations";
 
 export class UserDatabase extends BaseDatabase {
-  public async createUser(
-    id: string,
-    email: string,
-    name: string,
-    password: string,
-    role: string
+  public async signup(
+    input: User
   ): Promise<void> {
     try {
       await this.getConnection()
         .insert({
-          id,
-          email,
-          name,
-          password,
-          role
+          id: input.getId(),
+          name: input.getName(),
+          email: input.getEmail(),
+          password: input.getPassword(),
+          role: input.getRole()
         })
         .into(Migrations.getTableUsers());
     } catch (error) {
@@ -34,3 +30,5 @@ export class UserDatabase extends BaseDatabase {
     return User.toUserModel(result[0]);
   }
 }
+
+export default new UserDatabase()

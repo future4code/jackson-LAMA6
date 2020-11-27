@@ -1,3 +1,15 @@
+
+export const stringToUserRole = (input: string): UserRole =>{
+  switch (input) {
+    case "NORMAL":
+      return UserRole.NORMAL;
+    case "ADMIN":
+      return UserRole.ADMIN;
+    default:
+      throw new Error("Invalid user role");
+  }
+}
+
 export class User {
   constructor(
     private id: string,
@@ -7,34 +19,21 @@ export class User {
     private role: UserRole
   ) {}
 
-
-  public getId = (): string => this.id;
-  public getName = (): string => this.name;
-  public getEmail = (): string => this.email;
-  public getPassword = (): string => this.password;
-  public getRole = (): UserRole => this.role;
-
-
-  static stringToUserRole(input: string): UserRole {
-    switch (input) {
-      case "NORMAL":
-        return UserRole.NORMAL;
-      case "ADMIN":
-        return UserRole.ADMIN;
-      default:
-        throw new Error("Invalid user role");
-    }
-  }
-
   static toUserModel(user: any): User {
     return new User(
       user.id,
       user.name,
       user.email,
       user.password,
-      User.stringToUserRole(user.role)
+      stringToUserRole(user.role)
     );
   }
+
+  public getId = (): string => this.id;
+  public getName = (): string => this.name;
+  public getEmail = (): string => this.email;
+  public getPassword = (): string => this.password;
+  public getRole = (): UserRole => this.role;
 }
 
 export interface UserInput {
@@ -53,3 +52,4 @@ export enum UserRole {
   NORMAL = "NORMAL",
   ADMIN = "ADMIN"
 }
+

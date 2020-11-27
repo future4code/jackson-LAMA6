@@ -48,5 +48,4 @@ export class BandBusiness {
     }
   };
 }
-
 export default new BandBusiness(authenticator, idGenerator, bandDataBase);

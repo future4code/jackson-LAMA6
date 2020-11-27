@@ -1,48 +1,91 @@
-import { UserInput, LoginInput } from "../model/User";
-import { UserDatabase } from "../data/UserDatabase";
-import { IdGenerator } from "../services/IdGenerator";
-import { HashManager } from "../services/HashManager";
-import { Authenticator } from "../services/Authenticator";
+import { UserInput, LoginInput, UserRole } from "../model/User";
+import userDatabase, { UserDatabase } from "../data/UserDatabase";
+import idGenerator, { IdGenerator } from "../services/IdGenerator";
+import hashManager, { HashManager } from "../services/HashManager";
+import authenticator, { Authenticator } from "../services/Authenticator";
+import { ValidationOutput } from "../utils/validation";
+import { ParameterError } from "../error/ParameterError";
+import {User} from '../model/User'
 
 export class UserBusiness {
 
+    constructor (
+        private idGenerator: IdGenerator,
+        private hashManager: HashManager,
+        private authenticator: Authenticator,
+        private userDatabase: UserDatabase
+    ) {}
 
-    async createUser(user: UserInput) {
+    public signup = async (
+        user: UserInput, 
+        validator: (input: any) => ValidationOutput,
+        toUserRole: (role: string) => UserRole
+        ): Promise<string> =>{
 
-        const idGenerator = new IdGenerator();
-        const id = idGenerator.generate();
+        try {
+            const resultValidation = validator(user)
+            
+            if(!resultValidation){
+                throw new ParameterError("Missing properties", 422);
+            }
 
-        const hashManager = new HashManager();
-        const hashPassword = await hashManager.hash(user.password);
+            if(user.email.indexOf("@") === -1){
+                throw new ParameterError("invalid email", 422);
+            }
 
-        const userDatabase = new UserDatabase();
-        await userDatabase.createUser(id, user.email, user.name, hashPassword, user.role);
+            if (user.password.length < 6) {
+                throw new ParameterError("Invalid password", 422);
+            }
 
-        const authenticator = new Authenticator();
-        const accessToken = authenticator.generateToken({ id, role: user.role });
-
-        return accessToken;
+            const id: string = this.idGenerator.generate()
+            const hashPassword: string = await this.hashManager.hash(user.password)
+            await this.userDatabase.signup(new User(
+                id, 
+                user.name, 
+                user.email, 
+                hashPassword, 
+                toUserRole(user.role)
+            ))
+            const token: string = this.authenticator.generateToken({id: id, role: user.role})
+            return token
+        } catch (error) {
+            throw new ParameterError(error.message, error.code);
+        }
     }
 
-    async getUserByEmail(user: LoginInput) {
+    public login = async (
+        inputLogin: LoginInput,
+        validator: (input: any) => ValidationOutput
+        ): Promise<string> =>{
+        
+        try {
+            const resultValidation = validator(inputLogin)
 
-        const userDatabase = new UserDatabase();
-        const userFromDB = await userDatabase.getUserByEmail(user.email);
+            if(!resultValidation){
+                throw new ParameterError("Missing properties", 422);
+            }
 
-        const hashManager = new HashManager();
-        const hashCompare = await hashManager.compare(user.password, userFromDB.getPassword());
+            if(inputLogin.email.indexOf("@") === -1){
+                throw new ParameterError("invalid email", 422);
+            }
+            
+            const user: User = await this.userDatabase.getUserByEmail(inputLogin.email)
 
-        const authenticator = new Authenticator();
-        const accessToken = authenticator.generateToken({ id: userFromDB.getId(), role: userFromDB.getRole() });
+            const hashCompare: boolean = await this.hashManager.compare(inputLogin.password, user.getPassword())
 
-        if (!hashCompare) {
-            throw new Error("Invalid Password!");
+            if(!hashCompare){
+                throw new ParameterError("password is incorrect", 422);
+            }
+
+            const token: string = this.authenticator.generateToken({id: user.getId(), role: user.getRole()})
+
+            return token
+
+        } catch (error) {
+            throw new ParameterError(error.message, error.code);
         }
-
-        return accessToken;
     }
 }
 
-export default new UserBusiness()
+export default new UserBusiness(idGenerator, hashManager, authenticator, userDatabase)
 
- 

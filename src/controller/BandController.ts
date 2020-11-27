@@ -2,6 +2,7 @@ import bandBusiness, { BandBusiness } from "../business/BandBusiness";
 import { InputBand } from "../model/Band";
 import { Request, Response } from "express";
 import { validation } from "../utils/validation";
+import { BaseDatabase } from "../data/BaseDatabase";
 
 export class BandController {
   constructor(private bandBusiness: BandBusiness) {}
@@ -23,6 +24,7 @@ export class BandController {
       const { statusCode, message } = error;
       res.status(statusCode || 400).send({ message });
     }
+    await BaseDatabase.destroyConnection();
   };
 }
 

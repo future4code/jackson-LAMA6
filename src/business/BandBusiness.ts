@@ -19,7 +19,8 @@ export class BandBusiness {
   public registerBand = async (
     input: InputBand,
     token: string,
-    validator: (input: any) => ValidationOutput
+    validator: (input: any) => ValidationOutput,
+    toUserRole: (role: string) => UserRole
   ): Promise<void> => {
     try {
       const resultValidation = validator(input);
@@ -34,7 +35,9 @@ export class BandBusiness {
 
       const tokenData: AuthenticationData = this.authenticator.getData(token);
 
-      if (tokenData.role === UserRole.NORMAL) {
+      const role: UserRole = toUserRole(tokenData.role!)
+
+      if (role === UserRole.NORMAL) {
         throw new ParameterError("Not authorized", 401);
       }
 
@@ -47,5 +50,29 @@ export class BandBusiness {
       throw new ParameterError(error.message, error.code);
     }
   };
+
+  public getBand = async (
+    info: string, 
+    validator: (input: any) => ValidationOutput,
+    ): Promise<ClassBand> =>{
+    try {
+      const resultValidation = validator(info)
+
+      if(!resultValidation.isValid){
+        throw new ParameterError("Missing properties", 422);
+      }
+
+      const result = await this.bandDataBase.getBand(info)
+
+      if(!result){
+        throw new ParameterError("Not Found", 404);
+      }
+
+      return result
+
+    } catch (error) {
+      throw new ParameterError(error.message, error.code);
+    }
+  }
 }
 export default new BandBusiness(authenticator, idGenerator, bandDataBase);

@@ -25,7 +25,7 @@ export class UserBusiness {
         try {
             const resultValidation = validator(user)
             
-            if(!resultValidation){
+            if(!resultValidation.isValid){
                 throw new ParameterError("Missing properties", 422);
             }
 
@@ -61,7 +61,7 @@ export class UserBusiness {
         try {
             const resultValidation = validator(inputLogin)
 
-            if(!resultValidation){
+            if(!resultValidation.isValid){
                 throw new ParameterError("Missing properties", 422);
             }
 

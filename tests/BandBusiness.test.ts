@@ -1,12 +1,13 @@
 import { BandBusiness } from "../src/business/BandBusiness"
 import { InputBand } from "../src/model/Band"
+import { UserRole } from "../src/model/User"
 
 export const validatorMockFalsy = jest.fn((input: any): any =>{
-    return false
+    return {isValid: false}
 })
 
 export const validatorMockTrue = jest.fn((input: any): any =>{
-    return true
+    return {isValid: true}
 })
 
 export const dataTokenRoleNormalMock = jest.fn((token: any): any =>{
@@ -30,6 +31,15 @@ export const dataTokenRoleNonMock = jest.fn((token: any): any =>{
     }
 })
 
+export const toUserRoleNormal = jest.fn((role: any): any =>{
+    return UserRole.NORMAL
+})
+
+export const toUserRoleAdmim = jest.fn((role: any): any =>{
+    return UserRole.ADMIN
+})
+
+
 describe("Register band", () =>{
     const roleAdmin = { getData: dataTokenRoleAdminMock } as any
     const roleNormal = { getData: dataTokenRoleNormalMock } as any
@@ -51,12 +61,17 @@ describe("Register band", () =>{
             genre: "Rock",
             responsible: "John Lennon"
         }
-    
+        const toRole = toUserRoleAdmim
         const mockValidator = validatorMockFalsy
         expect.assertions(2)
 
         try {
-            await bandBusiness.registerBand(input, "tokenTest", mockValidator as any)
+            await bandBusiness.registerBand(
+                input, 
+                "tokenTest", 
+                mockValidator as any,
+                toRole as any
+                )
 
         } catch (error) {
             expect(error.message).toBe("Missing properties")  
@@ -76,12 +91,17 @@ describe("Register band", () =>{
             genre: "",
             responsible: "John Lennon"
         }
-    
+        const toRole = toUserRoleAdmim
         const mockValidator = validatorMockFalsy
         expect.assertions(2)
 
         try {
-            await bandBusiness.registerBand(input, "tokenTest", mockValidator as any)
+            await bandBusiness.registerBand(
+                input, 
+                "tokenTest", 
+                mockValidator as any,
+                toRole as any
+                )
 
         } catch (error) {
             expect(error.message).toBe("Missing properties")  
@@ -101,16 +121,52 @@ describe("Register band", () =>{
             genre: "Rock",
             responsible: ""
         }
-    
+        const toRole = toUserRoleAdmim
         const mockValidator = validatorMockFalsy
         expect.assertions(2)
 
         try {
-            await bandBusiness.registerBand(input, "tokenTest", mockValidator as any)
+            await bandBusiness.registerBand(
+                input, 
+                "tokenTest", 
+                mockValidator as any,
+                toRole as any
+                )
 
         } catch (error) {
             expect(error.message).toBe("Missing properties")  
             expect(error.code).toBe(422)
+        }
+    })
+
+    test("Error when role is 'NORMAL'", async () =>{
+
+        const bandBusiness: BandBusiness = new BandBusiness(
+            roleAdmin,
+            idGenerator,
+            bandDataBase
+        )
+
+        const input: InputBand = {
+            name: "Beatles",
+            genre: "Rock",
+            responsible: "John Lennon"
+        }
+        const toRole = toUserRoleNormal
+        const mockValidator = validatorMockTrue
+        expect.assertions(2)
+
+        try {
+            await bandBusiness.registerBand(
+                input, 
+                "tokenTest", 
+                mockValidator as any,
+                toRole as any
+                )
+
+        } catch (error) {
+            expect(error.message).toBe("Not authorized")  
+            expect(error.code).toBe(401)
         }
     })
 
@@ -126,18 +182,22 @@ describe("Register band", () =>{
             genre: "Rock",
             responsible: "John Lennon"
         }
-    
+        
+        const toRole = toUserRoleAdmim
         const mockValidator = validatorMockTrue
-        expect.assertions(1)
+        expect.assertions(2)
 
         try {
-            await bandBusiness.registerBand(input, "tokenTest", mockValidator as any)
+            await bandBusiness.registerBand(
+                input, 
+                "tokenTest", 
+                mockValidator as any,
+                toRole as any
+                )
 
-            expect(bandBusiness.registerBand).toHaveBeenCalled()
-            expect(bandBusiness.registerBand).toHaveBeenCalledWith(
-                input,
-                "tokenTest",
-                mockValidator
+            expect(bandDataBase.registerBand).toHaveBeenCalled()
+            expect(bandDataBase.registerBand).toHaveBeenCalledWith(
+                input
             )
 
         } catch (error) {

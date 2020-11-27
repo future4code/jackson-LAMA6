@@ -7,6 +7,14 @@ export class User {
     private role: UserRole
   ) {}
 
+
+  public getId = (): string => this.id;
+  public getName = (): string => this.name;
+  public getEmail = (): string => this.email;
+  public getPassword = (): string => this.password;
+  public getRole = (): UserRole => this.role;
+
+
   static stringToUserRole(input: string): UserRole {
     switch (input) {
       case "NORMAL":
@@ -27,13 +35,6 @@ export class User {
       User.stringToUserRole(user.role)
     );
   }
-
-  public getId = (): string => this.id;
-  public getName = (): string => this.name;
-  public getEmail = (): string => this.email;
-  public getPassword = (): string => this.password;
-  public getRole = (): string => this.role
-
 }
 
 export interface UserInput {

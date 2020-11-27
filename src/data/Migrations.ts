@@ -6,7 +6,7 @@ class Migrations extends BaseDatabase {
   private static tableUsers: string = "lama_users";
 
   public getTableBands = (): string => Migrations.tableBands;
-  public getTableShosws = (): string => Migrations.tableShows;
+  public getTableShows = (): string => Migrations.tableShows;
   public getTableUsers = (): string => Migrations.tableUsers;
 
   public createTables = async (): Promise<void> => {

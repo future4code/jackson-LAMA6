@@ -6,6 +6,7 @@ import { Authenticator } from "../services/Authenticator";
 
 export class UserBusiness {
 
+
     async createUser(user: UserInput) {
 
         const idGenerator = new IdGenerator();
@@ -43,3 +44,5 @@ export class UserBusiness {
 }
 
 export default new UserBusiness()
+
+ 

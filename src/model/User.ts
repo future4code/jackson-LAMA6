@@ -7,26 +7,6 @@ export class User {
     private role: UserRole
   ) {}
 
-  getId() {
-    return this.id;
-  }
-
-  getName() {
-    return this.name;
-  }
-
-  getEmail() {
-    return this.email;
-  }
-
-  getPassword() {
-    return this.password;
-  }
-
-  getRole() {
-    return this.role;
-  }
-
   static stringToUserRole(input: string): UserRole {
     switch (input) {
       case "NORMAL":
@@ -47,16 +27,23 @@ export class User {
       User.stringToUserRole(user.role)
     );
   }
+
+  public getId = (): string => this.id;
+  public getName = (): string => this.name;
+  public getEmail = (): string => this.email;
+  public getPassword = (): string => this.password;
+  public getRole = (): string => this.role
+
 }
 
-export interface UserInputDTO {
+export interface UserInput {
   email: string;
   password: string;
   name: string;
   role: string;
 }
 
-export interface LoginInputDTO {
+export interface LoginInput {
   email: string;
   password: string;
 }

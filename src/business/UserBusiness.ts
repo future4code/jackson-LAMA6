@@ -1,4 +1,4 @@
-import { UserInputDTO, LoginInputDTO } from "../model/User";
+import { UserInput, LoginInput } from "../model/User";
 import { UserDatabase } from "../data/UserDatabase";
 import { IdGenerator } from "../services/IdGenerator";
 import { HashManager } from "../services/HashManager";
@@ -6,7 +6,7 @@ import { Authenticator } from "../services/Authenticator";
 
 export class UserBusiness {
 
-    async createUser(user: UserInputDTO) {
+    async createUser(user: UserInput) {
 
         const idGenerator = new IdGenerator();
         const id = idGenerator.generate();
@@ -23,7 +23,7 @@ export class UserBusiness {
         return accessToken;
     }
 
-    async getUserByEmail(user: LoginInputDTO) {
+    async getUserByEmail(user: LoginInput) {
 
         const userDatabase = new UserDatabase();
         const userFromDB = await userDatabase.getUserByEmail(user.email);
@@ -41,3 +41,5 @@ export class UserBusiness {
         return accessToken;
     }
 }
+
+export default new UserBusiness()

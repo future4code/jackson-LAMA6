@@ -21,6 +21,15 @@ export class ClassBand {
         private responsible: string
     ) {}
 
+    static toBandModel(band: any): ClassBand {
+        return new ClassBand(
+            band.id,
+            band.name,
+            band.genre,
+            band.responsible
+        );
+    }
+
     public getId = (): string => this.id
     public getName = (): string => this.name
     public getGenre = (): string => this.genre

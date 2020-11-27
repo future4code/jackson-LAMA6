@@ -44,3 +44,4 @@ export class UserController {
     await BaseDatabase.destroyConnection();
   }
 }
+export default new UserController(userBusiness)

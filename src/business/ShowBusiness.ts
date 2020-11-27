@@ -1,4 +1,4 @@
-import { ShowInput, Show } from "../model/Show";
+import { ShowInput, Show, WeekDay } from "../model/Show";
 import idGenerator, { IdGenerator } from "../services/IdGenerator";
 import authenticator, {
   Authenticator,
@@ -16,11 +16,16 @@ export class ShowBusiness {
   ) {}
 
   public async createShow(
-    show: ShowInput,
+    input: ShowInput,
     token: string,
     validator: (input: any) => ValidationOutput
   ) {
     try {
+      const resultValidation = validator(input);
+      if (!resultValidation.isValid) {
+        throw new ParameterError("Missing properties", 422);
+      }
+
       const id = this.idGenerator.generate();
       const tokenData: AuthenticationData = this.authenticator.getData(token);
 
@@ -29,19 +34,19 @@ export class ShowBusiness {
       }
 
       if (
-        show.startTime > show.endTime ||
-        show.startTime < 8 ||
-        show.endTime > 23 ||
-        !Number.isInteger(show.startTime) ||
-        !Number.isInteger(show.endTime)
+        input.startTime > input.endTime ||
+        input.startTime < 8 ||
+        input.endTime > 23 ||
+        !Number.isInteger(input.startTime) ||
+        !Number.isInteger(input.endTime)
       ) {
         throw new Error("Selected time is invalid");
       }
 
       const showSchedule = await this.showDataBase.getShowByDate(
-        show.weekDay,
-        show.startTime,
-        show.endTime
+        input.weekDay,
+        input.startTime,
+        input.endTime
       );
 
       if (showSchedule.length > 0) {
@@ -50,12 +55,19 @@ export class ShowBusiness {
 
       const newShow = new Show(
         id,
-        Show.stringToWeekDay(show.weekDay),
-        show.startTime,
-        show.endTime,
-        show.bandId
+        Show.stringToWeekDay(input.weekDay),
+        input.startTime,
+        input.endTime,
+        input.bandId
       );
       await this.showDataBase.createShow(newShow);
+    } catch (error) {
+      throw new ParameterError(error.message, error.code);
+    }
+  }
+
+  public async getByDay(day: string) {
+    try {
     } catch (error) {
       throw new ParameterError(error.message, error.code);
     }

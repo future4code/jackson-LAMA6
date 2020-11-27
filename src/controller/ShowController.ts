@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { ShowInput } from "../model/Show";
+import { ShowInput, WeekDay } from "../model/Show";
 import showBusiness, { ShowBusiness } from "../business/ShowBusiness";
 import { validation } from "../utils/validation";
 
@@ -20,6 +20,17 @@ export class ShowController {
       await this.showBusiness.createShow(input, token, validation);
 
       res.status(200).send({ message: "Show created" });
+    } catch (error) {
+      const { statusCode, message } = error;
+      res.status(statusCode || 400).send({ message });
+    }
+  };
+
+  public getByDay = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const day = req.query.day;
+
+      res.status(200).send({ message: "This is your show" });
     } catch (error) {
       const { statusCode, message } = error;
       res.status(statusCode || 400).send({ message });

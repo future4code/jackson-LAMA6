@@ -4,4 +4,4 @@ import ShowController from "../controller/ShowController";
 export const showRouter = express.Router();
 
 showRouter.post("/create", ShowController.createShow);
-showRouter.get("/");
+showRouter.get("/", ShowController.getByDay);

@@ -1,13 +1,14 @@
+import { ParameterError } from "../error/ParameterError";
 
-export const stringToUserRole = (input: string): UserRole =>{
-
-  switch (input.toUpperCase()) {
-    case "NORMAL":
-      return UserRole.NORMAL;
-    case "ADMIN":
-      return UserRole.ADMIN;
-    default:
-      throw new Error("Invalid user role");
+export const stringToUserRole = (input: string): any =>{
+  if(input.toUpperCase() === "NORMAL"){
+    return UserRole.NORMAL
+  }
+  if(input.toUpperCase() === "ADMIN"){
+    return UserRole.ADMIN
+  }
+  if(!(input.toUpperCase() in UserRole)){
+    return false
   }
 }
 
@@ -38,9 +39,9 @@ export class User {
 }
 
 export interface UserInput {
+  name: string;
   email: string;
   password: string;
-  name: string;
   role: string;
 }
 

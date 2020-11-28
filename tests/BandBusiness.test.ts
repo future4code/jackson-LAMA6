@@ -1,55 +1,24 @@
 import { BandBusiness } from "../src/business/BandBusiness"
 import { InputBand } from "../src/model/Band"
-import { UserRole } from "../src/model/User"
+import { 
+    dataTokenRoleAdminMock, 
+    dataTokenRoleNormalMock, 
+    toUserRoleAdmim, 
+    toUserRoleNormal, 
+    validatorMockFalsy, 
+    validatorMockTrue 
+} from "./globals"
 
-export const validatorMockFalsy = jest.fn((input: any): any =>{
-    return {isValid: false}
-})
-
-export const validatorMockTrue = jest.fn((input: any): any =>{
-    return {isValid: true}
-})
-
-export const dataTokenRoleNormalMock = jest.fn((token: any): any =>{
-    return {
-        id:"id",
-        role: "NORMAL"
-    }
-})
-
-export const dataTokenRoleAdminMock = jest.fn((token: any): any =>{
-    return {
-        id:"id",
-        role: "ADMIN"
-    }
-})
-
-export const dataTokenRoleNonMock = jest.fn((token: any): any =>{
-    return {
-        id:"id",
-        role: "TEST"
-    }
-})
-
-export const toUserRoleNormal = jest.fn((role: any): any =>{
-    return UserRole.NORMAL
-})
-
-export const toUserRoleAdmim = jest.fn((role: any): any =>{
-    return UserRole.ADMIN
-})
 
 
 describe("Register band", () =>{
     const roleAdmin = { getData: dataTokenRoleAdminMock } as any
     const roleNormal = { getData: dataTokenRoleNormalMock } as any
-    const nonRole = { getData: dataTokenRoleNonMock } as any
     const idGenerator = { generate: jest.fn() } as any
     const bandDataBase = { registerBand: jest.fn() } as any
 
 
     test("Error when 'name' is empty", async () =>{
-
         const bandBusiness: BandBusiness = new BandBusiness(
             roleAdmin,
             idGenerator,
@@ -140,9 +109,8 @@ describe("Register band", () =>{
     })
 
     test("Error when role is 'NORMAL'", async () =>{
-
         const bandBusiness: BandBusiness = new BandBusiness(
-            roleAdmin,
+            roleNormal,
             idGenerator,
             bandDataBase
         )

@@ -30,7 +30,7 @@ export class UserBusiness {
             }
 
             if(user.email.indexOf("@") === -1){
-                throw new ParameterError("invalid email", 422);
+                throw new ParameterError("Invalid email", 422);
             }
 
             if (user.password.length < 6) {
@@ -39,15 +39,26 @@ export class UserBusiness {
 
             const id: string = this.idGenerator.generate()
             const hashPassword: string = await this.hashManager.hash(user.password)
+            const role = toUserRole(user.role)
+
+            if(!role){
+                throw new ParameterError("Invalid role", 422);
+            }
+
             await this.userDatabase.signup(new User(
                 id, 
                 user.name, 
                 user.email, 
                 hashPassword, 
-                toUserRole(user.role)
+                role
             ))
-            const token: string = this.authenticator.generateToken({id: id, role: user.role})
+            const token: string = this.authenticator.generateToken({
+                id: id, 
+                role: user.role
+            })
+
             return token
+
         } catch (error) {
             throw new ParameterError(error.message, error.code);
         }
@@ -66,18 +77,28 @@ export class UserBusiness {
             }
 
             if(inputLogin.email.indexOf("@") === -1){
-                throw new ParameterError("invalid email", 422);
+                throw new ParameterError("Invalid email", 422);
             }
             
             const user: User = await this.userDatabase.getUserByEmail(inputLogin.email)
 
-            const hashCompare: boolean = await this.hashManager.compare(inputLogin.password, user.getPassword())
-
-            if(!hashCompare){
-                throw new ParameterError("password is incorrect", 422);
+            if(!user){
+                throw new ParameterError("Not found", 404);
             }
 
-            const token: string = this.authenticator.generateToken({id: user.getId(), role: user.getRole()})
+            const hashCompare: boolean = await this.hashManager.compare(
+                inputLogin.password, 
+                user.getPassword()
+            )
+
+            if(!hashCompare){
+                throw new ParameterError("Password is incorrect", 422);
+            }
+
+            const token: string = this.authenticator.generateToken({
+                id: user.getId(), 
+                role: user.getRole()
+            })
 
             return token
 
